@@ -21,6 +21,7 @@ class ElementSpec:
 
     def extract_content(self, source: dict) -> Any:
         try:
+            # print("EXTRACT", self.ds_num, self.data_map)
             if self.ds_num is None:
                 result = nested_lookup(source, self.data_map)
             else:
@@ -31,6 +32,7 @@ class ElementSpec:
             if self.post_processor is not None:
                 result = self.post_processor(result)
         except:
+            # print("EXTRACT FALL BACK", self.ds_num, self.data_map)
             if isinstance(self.fallback_value, ElementSpec):
                 result = self.fallback_value.extract_content(source)
             else:
@@ -209,4 +211,21 @@ class ElementSpecs:
         "descriptionHTML": ElementSpec(None, [0, 13, 1]),
         "developer": ElementSpec(None, [0, 14]),
         "installs": ElementSpec(None, [0, 15]),
+    }
+
+    Developer = {
+        "apps": ElementSpec(
+            3,
+            [0, 1, 0, 22, 0],
+            lambda collection: [
+                ElementSpec(None, [0, 0, 0]).extract_content(entry) for entry in collection
+            ],
+        ),
+        "apps2": ElementSpec(
+            3,
+            [0, 1, 0, 21, 0],
+            lambda collection: [
+                ElementSpec(None, [0, 0]).extract_content(entry) for entry in collection
+            ],
+        )
     }
